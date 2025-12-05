@@ -12,7 +12,8 @@ const io = socketIO(server);
 const axios = require('axios');
 
 const SOCKET_IO_PORT = 3010;
-const GPS_TRACKER_PORT = 5210; 
+//const GPS_TRACKER_PORT = 5210; 
+const GPS_TRACKER_PORT = 10000; 
 
 
 app.use(express.static(path.join(__dirname, 'public')));
