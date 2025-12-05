@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OBX GPS Tracker Data Receiver</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Real-Time GPS Data (TK003)</h1>
+    <p>Status: <strong id="status">Connecting...</strong></p>
+    <pre id="data-output"></pre>
+
+    <h1>Live GPS Location Data</h1>
+    <p>IMEI: <span id="imei">N/A</span></p>
+    <p>Latitude: <span id="latitude">N/A</span></p>
+    <p>Longitude: <span id="longitude">N/A</span></p>
+    <p>Course: <span id="course">N/A</span></p>
+    <p>Speed: <span id="speed">N/A</span></p>
+
+    <script>
+        const socket = io();
+        const statusEl = document.getElementById('status');
+        const dataOutputEl = document.getElementById('data-output');
+
+        socket.on('connect', () => {
+            statusEl.textContent = 'Connected to server';
+            statusEl.style.color = 'green';
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.textContent = 'Disconnected';
+            statusEl.style.color = 'red';
+        });
+
+        // Listen for the custom 'gps_location_update' event from the server
+        socket.on('gps_location_update', (data) => {
+            console.log('Received GPS update:', data);
+            const dataString = JSON.stringify(data, null, 2);
+            dataOutputEl.textContent = dataString;
+
+            console.log('Received GPS update:', data);
+            document.getElementById('imei').textContent = data.imei;
+            document.getElementById('latitude').textContent = data.lat;
+            document.getElementById('longitude').textContent = data.lon;
+            document.getElementById('course').textContent = data.course;
+            document.getElementById('speed').textContent = data.speed;
+             // Display the latest data
+            // You would integrate this with a mapping library (e.g., Leaflet or Google Maps) here
+        });
+    </script>
+</body>
+</html>
