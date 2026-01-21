@@ -10,10 +10,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const axios = require('axios');
+var prevlocation = '';
 
 const SOCKET_IO_PORT = 3010;
-//const GPS_TRACKER_PORT = 5210; 
-const GPS_TRACKER_PORT = 10000; 
+const GPS_TRACKER_PORT = 5210; 
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,17 +44,21 @@ const gpsServer = net.createServer((client) => {
                 console.log('Parsed GPS data:', msg);
                 io.emit('gps_location_update', msg);
 
-                if (msg.lat > 0 || msg.lat != undefined){
+                //if (msg.lat != 'undefined' || msg.lat != '' || msg.lat > 0){
+				if (msg.gpsPositioned){
                     
                     axios.get('https://obx-system.obxsolution.com/gps-tracker/'+msg.imei+'/'+msg.lat+'/'+msg.lon+'/'+msg.speed+'/'+msg.course)
                       .then((response) => {
                         console.log('Response:', response.data);
+						prevlocation = msg.lat;
                       })
                       .catch((error) => {
                         console.error('Error:', error.message);
                       }); 
 
                 }
+				
+				//console.log('Latitude: '+msg.lat);
                 
             });
 
